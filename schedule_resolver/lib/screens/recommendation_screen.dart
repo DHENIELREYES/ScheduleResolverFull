@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/ai_schedule_service.dart';
+
+class RecommendationScreen extends StatelessWidget {
+  // Fixed 'sup.key' to 'super.key'
+  const RecommendationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final aiService = Provider.of<AiScheduleService>(context);
+    final analysis = aiService.currentAnalysis;
+
+    if (analysis == null) {
+      return const Scaffold(
+        body: Center(child: Text('No Data Available')),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("AI Schedule Recommendation"),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildSection(context, 'Detected Conflicts', analysis.conflicts, Colors.red.shade100, Icons.warning_amber_rounded),
+            const SizedBox(height: 16),
+            _buildSection(context, 'Ranked Tasks', analysis.rankedTasks, Colors.blue.shade100, Icons.format_list_numbered),
+            const SizedBox(height: 16),
+            _buildSection(context, 'Recommended Schedule', analysis.recommendedSchedule, Colors.green.shade100, Icons.calendar_today),
+            const SizedBox(height: 16),
+            _buildSection(context, 'Explanation', analysis.explanation, Colors.orange.shade100, Icons.lightbulb_outlined),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Fixed parameters: added name 'context' to BuildContext and capitalized 'Color'
+  Widget _buildSection(BuildContext context, String title, String content, Color bgColor, IconData icon) {
+    return Card(
+      color: bgColor,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 28, color: Colors.black87),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                ),
+              ],
+            ),
+            const Divider(color: Colors.black26),
+            Text(
+              content,
+              style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
